@@ -15,9 +15,13 @@ if (!process.env.DATABASE_URL) {
 }
 const sql = postgres(process.env.DATABASE_URL, { prepare: false });
 
-/** Same rounding rule as computeOverall() in src/lib/ratings.ts. */
+/**
+ * Same rounding rule as computeOverall() in src/lib/rating.ts (nearest 0.5,
+ * not nearest 0.01) — duplicated here rather than imported because this is
+ * a plain Node script run outside the Next.js/TS build.
+ */
 function overallOf(taste, atmosphere, foam, cost) {
-  return Math.round(((taste + atmosphere + foam + cost) / 4) * 100) / 100;
+  return Math.round(((taste + atmosphere + foam + cost) / 4) * 2) / 2;
 }
 
 const cafes = [
