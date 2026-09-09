@@ -1,0 +1,9 @@
+.wrapper { display: grid; gap: 1rem; }
+.map { height: clamp(22rem, 65vh, 40rem); width: 100%; z-index: 0; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+.pin { color: var(--color-accent-fg); background: var(--color-accent); border: 2px solid var(--color-bg); border-radius: 50%; text-align: center; line-height: 26px; }
+.map :global(.leaflet-popup-content-wrapper), .map :global(.leaflet-popup-tip), .map :global(.leaflet-control-attribution), .map :global(.leaflet-bar a) { background: var(--color-surface); color: var(--color-fg); }
+.map :global(.leaflet-popup-content a), .map :global(.leaflet-control-attribution a) { color: var(--color-fg); }
+.fallback :global(.leaflet-tile-pane) { filter: grayscale(1); }
+@media (prefers-color-scheme: dark) {
+  .fallback :global(.leaflet-tile-pane) { filter: grayscale(1) invert(1); }
+}

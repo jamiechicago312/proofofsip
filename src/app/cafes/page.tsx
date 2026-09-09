@@ -13,6 +13,7 @@ import { RatingDisplay } from "@/components/rating-display";
 import { FilterSelect } from "./filter-select";
 import { SearchInput } from "./search-input";
 import styles from "./page.module.css";
+import { CafeMap } from "@/components/cafe-map";
 
 // This page queries the database on every request (cafe/sip data changes
 // whenever a new sip is published) and there is no `DATABASE_URL` in this
@@ -37,6 +38,15 @@ export default async function CafesPage({
   const neighborhood = firstParam(params?.neighborhood) || null;
   const tag = firstParam(params?.tag) || null;
   const query = (firstParam(params?.q) ?? "").trim().slice(0, 200);
+  const view = firstParam(params?.view) === "map" ? "map" : "list";
+  const viewParams = new URLSearchParams();
+  for (const [name, value] of Object.entries({ sort, neighborhood, tag, q: query })) {
+    if (value) viewParams.set(name, value);
+  }
+  const listUrl = `/cafes?${viewParams.toString()}`;
+  viewParams.set("view", "map");
+  const mapUrl = `/cafes?${viewParams.toString()}`;
+  const clearUrl = view === "map" ? "/cafes?view=map" : "/cafes";
 
   const allCafes = await listCafesWithRatings();
   const neighborhoods = listNeighborhoods(allCafes);
@@ -53,9 +63,14 @@ export default async function CafesPage({
           far.
         </p>
       </header>
+      <nav aria-label="Cafe view" className={styles.controls}>
+        <Link href={listUrl} aria-current={view === "list" ? "page" : undefined}>List</Link>
+        <Link href={mapUrl} aria-current={view === "map" ? "page" : undefined}>Map</Link>
+      </nav>
 
       {allCafes.length > 0 ? (
         <form className={styles.controls} method="GET">
+          <input type="hidden" name="view" value={view} />
           <label className={styles.field}>
             <span className={styles.fieldLabel}>Search cafes</span>
             <SearchInput query={query} className={styles.select} />
@@ -111,7 +126,7 @@ export default async function CafesPage({
             Apply
           </button>
           {hasFilters ? (
-            <Link href="/cafes" className={styles.clearLink}>
+            <Link href={clearUrl} className={styles.clearLink}>
               Clear filters
             </Link>
           ) : null}
@@ -126,10 +141,12 @@ export default async function CafesPage({
       ) : cafes.length === 0 ? (
         <p className={styles.empty}>
           No cafes match your filters.{" "}
-          <Link href="/cafes" className={styles.clearLink}>
+          <Link href={clearUrl} className={styles.clearLink}>
             Clear filters
           </Link>
         </p>
+      ) : view === "map" ? (
+        <CafeMap cafes={cafes.map(({ slug, name, lat, lng, averageRating }) => ({ slug, name, lat, lng, averageRating }))} />
       ) : (
         <ul className={styles.grid}>
           {cafes.map((cafe) => (

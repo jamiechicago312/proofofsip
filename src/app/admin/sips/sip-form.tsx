@@ -26,6 +26,8 @@ export function SipForm({ cafes, entry }: {
     cafeName: "",
     neighborhood: "",
     address: "",
+    lat: "",
+    lng: "",
     title: entry?.title ?? "",
     body: entry?.body ?? "",
     visitDate: entry?.visitDate ?? new Date().toISOString().slice(0, 10),
@@ -58,6 +60,9 @@ export function SipForm({ cafes, entry }: {
           <label>Cafe name<input {...textField("cafeName")} required maxLength={200} /></label>
           <label>Neighborhood<input {...textField("neighborhood")} maxLength={200} /></label>
           <label>Address<input {...textField("address")} maxLength={500} /></label>
+          <p>Optional map location: enter both coordinates to show this cafe on the map.</p>
+          <label>Latitude<input {...textField("lat")} type="number" step="any" min={-90} max={90} /></label>
+          <label>Longitude<input {...textField("lng")} type="number" step="any" min={-180} max={180} /></label>
         </fieldset>}
         <label>Title<input {...textField("title")} required maxLength={200} /></label>
         <label>Visit date<input {...textField("visitDate")} type="date" required /></label>

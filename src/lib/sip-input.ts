@@ -23,13 +23,20 @@ export function parseSipInput(form: FormData) {
   }
   const cafeId = field("cafeId", 100);
   const cafeName = field("cafeName", 200, !cafeId);
+  const latitude = field("lat", 30);
+  const longitude = field("lng", 30);
+  const lat = latitude ? Number(latitude) : null;
+  const lng = longitude ? Number(longitude) : null;
+  if ((lat === null) !== (lng === null) || (lat !== null && (!Number.isFinite(lat) || Math.abs(lat) > 90)) || (lng !== null && (!Number.isFinite(lng) || Math.abs(lng) > 180))) {
+    throw new Error("Enter both valid latitude (-90 to 90) and longitude (-180 to 180), or leave both blank.");
+  }
   const tags = [...new Set(field("tags", 500).split(",").map((tag) => tag.trim()).filter(Boolean))];
   if (tags.length > 20 || tags.some((tag) => tag.length > 50)) throw new Error("Use up to 20 tags, each at most 50 characters.");
 
   return {
     id: field("id", 100),
     cafeId,
-    cafe: { name: cafeName, neighborhood: field("neighborhood", 200) || null, address: field("address", 500) || null },
+    cafe: { name: cafeName, neighborhood: field("neighborhood", 200) || null, address: field("address", 500) || null, lat, lng },
     sip: {
       title: field("title", 200, true),
       body: field("body", 50000, true),
