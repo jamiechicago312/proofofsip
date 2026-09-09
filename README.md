@@ -1,5 +1,7 @@
 # Proof of Sip
 
+For account setup and launch steps, start with [Jamie's checklist](./to-do.md).
+
 Proof of Sip is a cappuccino-tasting journal for Chicago cafes — a cross
 between Yelp (structured ratings), Google Maps (a map of places), and a blog
 (a written entry per visit, with photos). One author posts entries; anyone
