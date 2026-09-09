@@ -11,6 +11,7 @@ import {
 } from "@/lib/cafes";
 import { RatingDisplay } from "@/components/rating-display";
 import { FilterSelect } from "./filter-select";
+import { SearchInput } from "./search-input";
 import styles from "./page.module.css";
 
 // This page queries the database on every request (cafe/sip data changes
@@ -35,12 +36,13 @@ export default async function CafesPage({
   const sort = parseCafeSort(firstParam(params?.sort));
   const neighborhood = firstParam(params?.neighborhood) || null;
   const tag = firstParam(params?.tag) || null;
+  const query = (firstParam(params?.q) ?? "").trim().slice(0, 200);
 
   const allCafes = await listCafesWithRatings();
   const neighborhoods = listNeighborhoods(allCafes);
   const tags = listTags(allCafes);
-  const cafes = sortCafes(filterCafes(allCafes, { neighborhood, tag }), sort);
-  const hasFilters = Boolean(neighborhood || tag);
+  const cafes = sortCafes(filterCafes(allCafes, { neighborhood, tag, query }), sort);
+  const hasFilters = Boolean(neighborhood || tag || query);
 
   return (
     <main className={styles.main}>
@@ -54,6 +56,10 @@ export default async function CafesPage({
 
       {allCafes.length > 0 ? (
         <form className={styles.controls} method="GET">
+          <label className={styles.field}>
+            <span className={styles.fieldLabel}>Search cafes</span>
+            <SearchInput query={query} className={styles.select} />
+          </label>
           <label className={styles.field}>
             <span className={styles.fieldLabel}>Sort</span>
             <FilterSelect
@@ -112,6 +118,7 @@ export default async function CafesPage({
         </form>
       ) : null}
 
+      {hasFilters && <p role="status">{cafes.length} cafe{cafes.length === 1 ? "" : "s"} found{query ? ` for “${query}”` : ""}.</p>}
       {allCafes.length === 0 ? (
         <p className={styles.empty}>
           No cafes yet — check back soon for the first entry.
