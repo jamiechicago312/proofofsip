@@ -7,18 +7,18 @@ can browse, filter, and read.
 
 ## Current status
 
-This repository currently contains the Issue #1 foundation: the Next.js
-scaffold, the monochrome coffee-toned design tokens (light/dark via
-`prefers-color-scheme`, no manual toggle), local tooling, CI, and setup
-documentation. The database, cafe/sip listings, map, and admin flow are
-tracked in the linked GitHub issues and are not implemented yet.
+The foundation, database schema/seed, public cafe list and journal pages,
+rating components, and GitHub admin login are implemented. The admin now
+supports creating cafes inline, writing sips, editing existing entries, and
+saving drafts or publishing. Photo uploads, map, search, and the complete
+home page remain tracked in GitHub issues.
 
 ## Local development
 
 1. Use Node.js 22 or later.
 2. Copy `.env.example` to `.env.local` and fill only the values needed by the
-   issue you are working on — nothing in this foundation issue reads them
-   yet. Do not commit `.env.local`.
+   feature you are working on. Database pages need `DATABASE_URL`; admin
+   login also needs the GitHub OAuth and Auth.js variables. Do not commit `.env.local`.
 3. Install dependencies with `npm install`.
 4. Start the app with `npm run dev`, then open http://localhost:3000.
 
@@ -30,6 +30,14 @@ npm run typecheck  # tsc --noEmit
 npm test           # vitest run
 npm run build      # production build
 ```
+
+## Writing entries
+
+Sign in at `/admin`, then choose **Write a sip**. Select a cafe or create one
+inline, enter your journal text and ratings, and save. Uncheck **Published**
+to keep an entry as a draft. The admin lists both drafts and published entries
+with edit links. Updating an entry preserves its existing photos. New photo
+uploads are tracked separately in issue #9.
 
 ## Theme
 

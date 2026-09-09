@@ -1,0 +1,9 @@
+.main { max-width: 52rem; margin: auto; padding: var(--page-padding); display: grid; gap: 1.5rem; }
+.form, .fields { display: grid; gap: 1.25rem; min-width: 0; }
+.fields { border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1rem; }
+.fields label { display: grid; gap: 0.5rem; }
+.form input, .form select, .form textarea, .form button { font: inherit; color: var(--color-fg); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 0.75rem; max-width: 100%; min-width: 0; }
+.form textarea { resize: vertical; }
+.form button { background: var(--color-accent); color: var(--color-accent-fg); cursor: pointer; }
+.form button:disabled { opacity: 0.6; cursor: wait; }
+.fields .checkbox { display: flex; align-items: center; }
