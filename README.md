@@ -48,6 +48,12 @@ delete the stored file. Abandoned uploads can be removed in the Blob dashboard.
 
 ## Theme
 
+The cafe list offers a map view with the same search and filters. Pins need
+latitude and longitude (optional when creating a cafe). Without coordinates,
+cafes remain available through the map's accompanying links.
+OpenStreetMap tiles work without configuration; set `NEXT_PUBLIC_CARTO_API_KEY`
+and rebuild to use CARTO Positron/Dark Matter. See `to-do.md` for key setup.
+
 The whole UI is monochrome — a single coffee-toned neutral ramp from
 near-black espresso to cream white, with ratings shown via thumb icon/fill
 rather than color-coding. All colors are CSS custom properties defined once

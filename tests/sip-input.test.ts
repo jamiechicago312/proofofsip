@@ -8,6 +8,15 @@ function validForm() {
 }
 
 describe("sip validation", () => {
+  it("requires valid paired map coordinates for a new cafe", () => {
+    const form = validForm();
+    form.set("lat", "41.88");
+    expect(() => parseSipInput(form)).toThrow("both valid");
+    form.set("lng", "-87.63");
+    expect(parseSipInput(form).cafe).toMatchObject({ lat: 41.88, lng: -87.63 });
+    form.set("lat", "91");
+    expect(() => parseSipInput(form)).toThrow("both valid");
+  });
   it("computes the score on the server and normalizes tags", () => {
     const form = validForm();
     form.set("overall", "2");
