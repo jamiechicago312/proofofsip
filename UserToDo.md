@@ -10,10 +10,9 @@ Vercel or Blob storage.
   open PRs from here):** run `gh auth login` (or set a `GH_TOKEN`) with
   `repo` scope for this repository. You can type `! gh auth login` in the
   chat to run it interactively and hand control back when done.
-- [ ] **Git identity for commits:** run
-  `git config --global user.name "Jamie Chicago"` and
-  `git config --global user.email "jamiechicago312@gmail.com"` (or your
-  preferred name) if not already set globally.
+- [ ] **Git identity for commits:** follow `AGENTS.md` and set the local
+  repository identity to `Jamie Chicago` and
+  `87397251+jamiechicago312@users.noreply.github.com` for Vercel deploys.
 - [ ] **Neon database:** create a Neon project + database, copy the pooled
   connection string from Neon's **Connect** panel into `.env.local` as
   `DATABASE_URL`. Add the same value to Vercel's Preview and Production
@@ -37,8 +36,9 @@ Vercel or Blob storage.
   authenticated GitHub account's username against this value — anyone else
   who signs in is denied access to `/admin`.
 - [ ] **Vercel:** create/connect a Vercel project, import this repository,
-  grant deployer access. Add `DATABASE_URL`, `ADMIN_PASSWORD`, and
-  `ADMIN_SESSION_SECRET` there for Preview and Production.
+  grant deployer access. Add `DATABASE_URL`, `AUTH_GITHUB_ID`,
+  `AUTH_GITHUB_SECRET`, `AUTH_SECRET`, and `ADMIN_GITHUB_USERNAME` there for
+  Preview and Production.
 - [ ] **Vercel Blob:** enable Blob storage on the Vercel project (Storage tab
   → Create → Blob) and copy the `BLOB_READ_WRITE_TOKEN` into your env vars
   (Vercel sets this automatically for connected projects; only needed

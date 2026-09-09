@@ -1,5 +1,9 @@
 import { auth, signIn, signOut } from "@/lib/auth";
 import styles from "./page.module.css";
+import Link from "next/link";
+import { desc, eq } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { cafes, sips } from "@/lib/schema";
 
 export const metadata = {
   title: "Admin — Proof of Sip",
@@ -40,14 +44,18 @@ export default async function AdminPage({
   }
 
   const name = session.user.name ?? session.user.email ?? "the admin account";
+  const entries = await db().select({ id: sips.id, title: sips.title, published: sips.published, cafeName: cafes.name }).from(sips).innerJoin(cafes, eq(sips.cafeId, cafes.id)).orderBy(desc(sips.updatedAt));
 
   return (
     <main className={styles.main}>
       <h1 className={styles.title}>Admin</h1>
       <p className={styles.status}>
-        Signed in as <strong>{name}</strong>. The admin area (creating and
-        editing sips) is coming in a later issue.
+        Signed in as <strong>{name}</strong>.
       </p>
+      {params?.saved === "1" && <p role="status">Sip saved.</p>}
+      <Link href="/admin/sips/new" className={styles.button}>Write a sip</Link>
+      <Link href="/cafes">Browse cafes</Link>
+      {entries.length ? <ul>{entries.map((entry) => <li key={entry.id}><Link href={`/admin/sips/${entry.id}/edit`}>{entry.title}</Link> — {entry.cafeName} ({entry.published ? "Published" : "Draft"})</li>)}</ul> : <p>No sips yet. Write your first entry.</p>}
       <form
         action={async () => {
           "use server";

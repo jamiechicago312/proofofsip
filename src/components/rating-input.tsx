@@ -75,6 +75,7 @@ export function RatingInput({
                 type="radio"
                 id={optionId}
                 name={groupName}
+                value={thumb.value}
                 className={styles.input}
                 checked={selected}
                 disabled={disabled}
