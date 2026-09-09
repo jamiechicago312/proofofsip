@@ -12,8 +12,9 @@ can browse, filter, and read.
 The foundation, database schema/seed, public cafe list and journal pages,
 rating components, and GitHub admin login are implemented. The admin now
 supports creating cafes inline, writing sips, editing existing entries, and
-saving drafts or publishing, with multiple photo uploads. Map, search, and the complete
-home page remain tracked in GitHub issues.
+saving drafts or publishing, with multiple photo uploads. Search is implemented,
+and the home page shows recent published sips and journal statistics. The map
+view is in PR #26; merge it before the home page to enable its map link.
 
 ## Local development
 

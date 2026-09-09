@@ -41,7 +41,7 @@ export async function generateMetadata({
 
 function SipCard({ sip }: { sip: SipEntry }) {
   return (
-    <article className={styles.sip}>
+    <article className={styles.sip} id={`sip-${sip.id}`}>
       {sip.photos.length > 0 ? (
         <div className={styles.photos}>
           {sip.photos.map((photo) => (

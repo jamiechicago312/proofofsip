@@ -93,7 +93,7 @@ These are implementation tasks, not account setup you need to do manually.
 - [ ] [#4 — Map view](https://github.com/jamiechicago312/proofofsip/issues/4)
 - [ ] [#9 — Photo upload](https://github.com/jamiechicago312/proofofsip/issues/9): implemented in [PR #24](https://github.com/jamiechicago312/proofofsip/pull/24), CI and Vercel preview pass; merge and test an upload.
 - [ ] [#10 — Search](https://github.com/jamiechicago312/proofofsip/issues/10): implemented on `agent/cafe-search`; searches name, neighborhood, and tags with existing filters and sorting.
-- [ ] [#11 — Home page](https://github.com/jamiechicago312/proofofsip/issues/11)
+- [ ] [#11 — Home page](https://github.com/jamiechicago312/proofofsip/issues/11): implemented on `agent/journal-home`; merge the map PR #26 first, then the home page PR.
 - [ ] [#12 — Mobile, accessibility, and SEO polish](https://github.com/jamiechicago312/proofofsip/issues/12)
 - [ ] [#13 — Production deployment and smoke test](https://github.com/jamiechicago312/proofofsip/issues/13)
 
