@@ -120,6 +120,19 @@ describe("filterCafes", () => {
     const result = filterCafes([wickerPark, loganSquare], {});
     expect(result).toHaveLength(2);
   });
+
+  it("searches names, neighborhoods, and published tags without case sensitivity", () => {
+    const named = cafe({ id: "c", name: "Morning Coffee", tags: ["oat milk"] });
+    expect(filterCafes([named, wickerPark], { query: " MORNING oat " }).map((item) => item.id)).toEqual(["c"]);
+    expect(filterCafes([loganSquare, wickerPark], { query: "WICKER wifi" }).map((item) => item.id)).toEqual(["a"]);
+    expect(filterCafes([loganSquare, wickerPark], { query: "   " })).toHaveLength(2);
+  });
+
+  it("combines search with both filters and treats punctuation literally", () => {
+    expect(filterCafes([wickerPark, loganSquare], { query: "wifi", neighborhood: "Logan Square" })).toEqual([]);
+    expect(filterCafes([wickerPark, loganSquare], { query: "wifi", tag: "quiet" })).toEqual([wickerPark]);
+    expect(filterCafes([wickerPark], { query: "%" })).toEqual([]);
+  });
 });
 
 describe("listNeighborhoods", () => {

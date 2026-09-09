@@ -193,6 +193,7 @@ export function sortCafes(
 }
 
 export interface CafeFilters {
+  query?: string | null;
   /** Exact `neighborhood` match, or `null`/`undefined` for no filter. */
   neighborhood?: string | null;
   /** Cafe must have at least one published sip tagged with this, or `null`/`undefined` for no filter. */
@@ -204,7 +205,10 @@ export function filterCafes(
   list: readonly CafeWithRating[],
   filters: CafeFilters,
 ): CafeWithRating[] {
+  const terms = (filters.query ?? "").trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   return list.filter((cafe) => {
+    const searchable = [cafe.name, cafe.neighborhood ?? "", ...cafe.tags].join(" ").toLocaleLowerCase();
+    if (!terms.every((term) => searchable.includes(term))) return false;
     if (filters.neighborhood && cafe.neighborhood !== filters.neighborhood) {
       return false;
     }
