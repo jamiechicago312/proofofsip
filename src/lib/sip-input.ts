@@ -1,4 +1,5 @@
 import { computeOverall, RATING_CATEGORIES, type CategoryScores } from "./rating";
+import { parsePhotos } from "./photos";
 
 export function parseSipInput(form: FormData) {
   function field(name: string, max: number, required = false) {
@@ -38,6 +39,7 @@ export function parseSipInput(form: FormData) {
       tags,
       priceLabel: field("priceLabel", 50) || null,
       published: form.get("published") === "on",
+      ...(form.has("photos") ? { photos: parsePhotos(form.get("photos")) } : {}),
     },
   };
 }

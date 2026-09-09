@@ -12,7 +12,7 @@ can browse, filter, and read.
 The foundation, database schema/seed, public cafe list and journal pages,
 rating components, and GitHub admin login are implemented. The admin now
 supports creating cafes inline, writing sips, editing existing entries, and
-saving drafts or publishing. Photo uploads, map, search, and the complete
+saving drafts or publishing, with multiple photo uploads. Map, search, and the complete
 home page remain tracked in GitHub issues.
 
 ## Local development
@@ -38,8 +38,12 @@ npm run build      # production build
 Sign in at `/admin`, then choose **Write a sip**. Select a cafe or create one
 inline, enter your journal text and ratings, and save. Uncheck **Published**
 to keep an entry as a draft. The admin lists both drafts and published entries
-with edit links. Updating an entry preserves its existing photos. New photo
-uploads are tracked separately in issue #9.
+with edit links. Add up to eight JPEG, PNG, or WebP photos (8 MB each), edit
+their descriptions, or remove them from the entry before saving. Configure
+`BLOB_READ_WRITE_TOKEN` for a public Vercel Blob store to enable uploads.
+Photos upload directly to Blob; their URLs are public even when the sip is
+a draft. Removing a photo detaches it from the sip after saving; it does not
+delete the stored file. Abandoned uploads can be removed in the Blob dashboard.
 
 ## Theme
 

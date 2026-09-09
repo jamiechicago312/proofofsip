@@ -6,10 +6,13 @@ import { RatingInput } from "@/components/rating-input";
 import { RATING_CATEGORIES, type CategoryScores } from "@/lib/rating";
 import { saveSip } from "./actions";
 import styles from "./sip-form.module.css";
+import type { Photo } from "@/lib/schema";
+import { PhotoUpload } from "./photo-upload";
 
 export type SipFormEntry = CategoryScores & {
   id: string; cafeId: string; title: string; body: string; visitDate: string;
   tags: string[]; priceLabel: string | null; published: boolean;
+  photos?: Photo[];
 };
 
 export function SipForm({ cafes, entry }: {
@@ -30,6 +33,8 @@ export function SipForm({ cafes, entry }: {
     priceLabel: entry?.priceLabel ?? "",
   });
   const [published, setPublished] = useState(entry?.published ?? true);
+  const [photos, setPhotos] = useState<Photo[]>(entry?.photos ?? []);
+  const [uploading, setUploading] = useState(false);
   function textField(name: keyof typeof fields) {
     return {
       name,
@@ -41,7 +46,7 @@ export function SipForm({ cafes, entry }: {
   return <main className={styles.main}>
     <Link href="/admin">← Admin</Link>
     <h1>{entry ? "Edit sip" : "New sip"}</h1>
-    <form action={action} className={styles.form}>
+    <form action={action} className={styles.form} onSubmit={(event) => { if (uploading) event.preventDefault(); }}>
       <fieldset disabled={pending} className={styles.fields}>
         <legend>Sip details</legend>
         <input type="hidden" name="id" value={entry?.id ?? ""} />
@@ -62,8 +67,9 @@ export function SipForm({ cafes, entry }: {
         <label>Price (optional)<input {...textField("priceLabel")} placeholder="$5.50" maxLength={50} /></label>
         <label className={styles.checkbox}><input type="checkbox" name="published" checked={published} onChange={(event) => setPublished(event.target.checked)} />Published — visible to everyone</label>
       </fieldset>
+      <PhotoUpload photos={photos} onChange={setPhotos} onBusyChange={setUploading} disabled={pending || uploading} />
       {state.error && <p role="alert">{state.error}</p>}
-      <button disabled={pending} type="submit">{pending ? "Saving…" : "Save sip"}</button>
+      <button disabled={pending || uploading} type="submit">{pending ? "Saving…" : uploading ? "Uploading photos…" : "Save sip"}</button>
     </form>
   </main>;
 }
