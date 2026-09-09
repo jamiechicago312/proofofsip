@@ -3,6 +3,9 @@
 Updated September 9, 2026. Start with the account setup below. Check items
 off as you finish; unverified external setup is left unchecked.
 
+Jamie reports that environment variables are configured. The remaining
+unchecked setup items should be confirmed during the live smoke test.
+
 ## Already handled
 
 - [x] GitHub CLI access works for `jamiechicago312`.
@@ -13,7 +16,7 @@ off as you finish; unverified external setup is left unchecked.
   after checks pass and review conversations are resolved.
 - [x] Force pushes and deletion of main are blocked.
 - [x] Sip creation/editing is pushed in [PR #21](https://github.com/jamiechicago312/proofofsip/pull/21).
-- [ ] Review and merge PR #21 when checks pass. It adds cafe creation,
+- [x] Review and merge PR #21 when checks pass. It adds cafe creation,
   sip editing, drafts, and publishing; photo uploads come separately.
 
 ## 1. Connect hosting and the database
@@ -81,8 +84,8 @@ After PR #21 is merged and deployed:
 These are implementation tasks, not account setup you need to do manually.
 
 - [ ] [#4 — Map view](https://github.com/jamiechicago312/proofofsip/issues/4)
-- [ ] [#9 — Photo upload](https://github.com/jamiechicago312/proofofsip/issues/9)
-- [ ] [#10 — Search](https://github.com/jamiechicago312/proofofsip/issues/10)
+- [ ] [#9 — Photo upload](https://github.com/jamiechicago312/proofofsip/issues/9): implemented in [PR #24](https://github.com/jamiechicago312/proofofsip/pull/24), CI and Vercel preview pass; merge and test an upload.
+- [ ] [#10 — Search](https://github.com/jamiechicago312/proofofsip/issues/10): implemented on `agent/cafe-search`; searches name, neighborhood, and tags with existing filters and sorting.
 - [ ] [#11 — Home page](https://github.com/jamiechicago312/proofofsip/issues/11)
 - [ ] [#12 — Mobile, accessibility, and SEO polish](https://github.com/jamiechicago312/proofofsip/issues/12)
 - [ ] [#13 — Production deployment and smoke test](https://github.com/jamiechicago312/proofofsip/issues/13)
