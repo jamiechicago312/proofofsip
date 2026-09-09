@@ -138,7 +138,7 @@ export default async function CafesPage({
 
 function CafeCard({ cafe }: { cafe: CafeWithRating }) {
   return (
-    <article className={styles.card}>
+    <Link href={`/cafes/${cafe.slug}`} className={styles.card}>
       {cafe.photo ? (
         // Photo URLs come from Vercel Blob (arbitrary/unknown host at build
         // time), so next/image's remotePatterns allowlist isn't worth
@@ -171,6 +171,6 @@ function CafeCard({ cafe }: { cafe: CafeWithRating }) {
           </span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
