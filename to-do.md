@@ -81,6 +81,13 @@ After PR #21 is merged and deployed:
 
 ## Remaining build work
 
+Map setup: the map works with OpenStreetMap by default. For CARTO Positron
+and Dark Matter, request a free key at <https://carto.com/basemaps/apikey/>,
+set `NEXT_PUBLIC_CARTO_API_KEY` in Vercel, and redeploy. CARTO now requires
+a key, superseding the original keyless assumption. This browser key is
+visible in tile requests. New cafes can include optional latitude/longitude;
+existing cafes without coordinates remain listed but have no pin.
+
 These are implementation tasks, not account setup you need to do manually.
 
 - [ ] [#4 — Map view](https://github.com/jamiechicago312/proofofsip/issues/4)
