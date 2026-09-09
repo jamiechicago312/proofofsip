@@ -43,7 +43,7 @@ export const sips = pgTable(
     foam: smallint("foam").notNull(),
     cost: smallint("cost").notNull(),
     // Average of taste/atmosphere/foam/cost, computed server-side on save
-    // (see computeOverall in src/lib/ratings.ts) and stored so it can be
+    // (see computeOverall in src/lib/rating.ts) and stored so it can be
     // sorted/filtered without recomputing at read time.
     overall: numeric("overall", { precision: 3, scale: 2, mode: "number" }).notNull(),
     photos: jsonb("photos").$type<Photo[]>().notNull().default([]),
