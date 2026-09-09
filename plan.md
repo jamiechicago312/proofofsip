@@ -18,7 +18,8 @@ anyone can browse, filter, and read.
 ## Assumptions (flag if wrong, easy to change later)
 
 - Single-author: Jamie is the only reviewer. No public sign-up/accounts.
-  Writing a new entry requires a password-gated `/admin`.
+  Writing a new entry requires signing into `/admin` with GitHub OAuth,
+  restricted to one GitHub account.
 - Primarily Chicago now; the data model is not Chicago-only (city is a field),
   so expanding later needs no schema change.
 - "Cost" is a value-for-money thumbs rating, not a running price index — an
@@ -33,7 +34,7 @@ anyone can browse, filter, and read.
 | Database | Neon Postgres + Drizzle ORM | Free tier, serverless driver works on Vercel edge/node, avoids a later JSON→SQL migration |
 | Map | Leaflet + CARTO Positron/Dark Matter tiles | Free, no API key, tiles are already clean monochrome and swap for light/dark — fits the theme goal directly, no Google Maps billing setup |
 | Photos | Vercel Blob | Native Vercel integration, simplest upload path from an admin form |
-| Admin auth | Single shared password (`ADMIN_PASSWORD`) → signed session cookie via `jose` | You're the only author; avoids standing up OAuth for one user |
+| Admin auth | GitHub OAuth (Auth.js/`next-auth` v5), sign-in restricted to one GitHub username | Real GitHub login beats a shared password; no secret to remember or leak, and Auth.js's GitHub provider is a few lines of config |
 | Testing | Vitest (design tokens, rating math, API routes) | Matches existing pattern |
 | Hosting | Vercel | As requested |
 
@@ -73,7 +74,8 @@ sips                                  -- one journal entry / visit
   price_label                     (text, optional, e.g. "$5.50")
   published (bool, default true), created_at, updated_at
 
-admin_sessions                        -- or a signed cookie only, no table needed
+-- No sessions/users table needed: Auth.js manages the session (signed
+-- JWT cookie); authorization is a single username check, not stored state.
 ```
 
 Photos and tags are kept as columns (jsonb / array) rather than separate
@@ -107,8 +109,8 @@ tables for MVP — normalize later only if it earns its keep.
    journal feed (photo, write-up, rating breakdown per visit).
 6. **Rating component** — reusable thumbs input (admin) and thumbs display
    (public), shared by forms and detail/list views.
-7. **Admin auth** — password-gated `/admin` route, signed session cookie,
-   logout.
+7. **Admin auth** — GitHub OAuth sign-in (Auth.js) gating `/admin`,
+   restricted to one GitHub account, logout.
 8. **Entry (sip) creation/edit form** — create a cafe (if new) + write a sip:
    title, markdown body, visit date, four ratings, tags, optional price.
 9. **Photo upload** — Vercel Blob integration wired into the sip form.

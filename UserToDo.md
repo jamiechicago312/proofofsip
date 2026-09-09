@@ -22,10 +22,20 @@ Vercel or Blob storage.
   (`drizzle/0000_*.sql`) once against the Neon database via Neon's SQL Editor
   or `psql "$DATABASE_URL" -f drizzle/0000_*.sql`. Deploys do not run
   migrations automatically.
-- [ ] **Admin password:** pick a password and set `ADMIN_PASSWORD` in
-  `.env.local` (and later in Vercel). Also set `ADMIN_SESSION_SECRET` to a
-  long random string (e.g. `openssl rand -hex 32`) — used to sign the admin
-  session cookie.
+- [ ] **GitHub OAuth App (admin login):** create one at
+  <https://github.com/settings/developers> → "New OAuth App". Set the
+  callback URL to `http://localhost:3000/api/auth/callback/github` for local
+  dev; create a second OAuth App (or update the callback URL) for production
+  with `https://<your-vercel-domain>/api/auth/callback/github`. Copy the
+  Client ID/Secret into `.env.local` as `AUTH_GITHUB_ID` /
+  `AUTH_GITHUB_SECRET` (and later into Vercel).
+- [ ] **Auth secret:** generate one with `npx auth secret` (or
+  `openssl rand -hex 32`) and set it as `AUTH_SECRET` in `.env.local` and
+  Vercel — used to sign the session cookie.
+- [ ] **Admin username:** set `ADMIN_GITHUB_USERNAME` to your GitHub username
+  (`jamiechicago312`) in `.env.local` and Vercel. Sign-in checks the
+  authenticated GitHub account's username against this value — anyone else
+  who signs in is denied access to `/admin`.
 - [ ] **Vercel:** create/connect a Vercel project, import this repository,
   grant deployer access. Add `DATABASE_URL`, `ADMIN_PASSWORD`, and
   `ADMIN_SESSION_SECRET` there for Preview and Production.
