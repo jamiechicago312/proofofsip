@@ -1,0 +1,98 @@
+/*
+ * Proof of Sip — design tokens
+ *
+ * A single coffee-toned neutral ramp (near-black espresso to cream white),
+ * plus semantic tokens built on top of it. Components should always
+ * reference the semantic tokens (--color-*) rather than the raw ramp steps
+ * or hardcoded colors, so the whole UI stays monochrome and theme-aware.
+ *
+ * Light/dark is driven entirely by `prefers-color-scheme` — there is no
+ * manual toggle. The raw ramp values never change; only which step each
+ * semantic token points to changes between the two color-scheme blocks
+ * below.
+ */
+
+:root {
+  /* Coffee neutral ramp, espresso (950, darkest) to cream (50, lightest). */
+  --coffee-950: #1b120c;
+  --coffee-900: #241810;
+  --coffee-800: #332216;
+  --coffee-700: #4a3120;
+  --coffee-600: #64432c;
+  --coffee-500: #82593c;
+  --coffee-400: #a67c56;
+  --coffee-300: #c8a37c;
+  --coffee-200: #e0c6a0;
+  --coffee-100: #efdfc4;
+  --coffee-50: #faf3e6;
+  --coffee-0: #fffdf9;
+
+  /* Semantic tokens — light mode (default). */
+  --color-bg: var(--coffee-0);
+  --color-surface: var(--coffee-50);
+  --color-border: var(--coffee-200);
+  --color-fg: var(--coffee-950);
+  --color-fg-muted: var(--coffee-700);
+  --color-accent: var(--coffee-900);
+  --color-accent-fg: var(--coffee-0);
+  --color-focus-ring: var(--coffee-500);
+
+  /* Layout tokens, theme-independent. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --page-padding: clamp(1.25rem, 5vw, 4rem);
+  --radius: 0.75rem;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Semantic tokens — dark mode. Same ramp, roles flipped. */
+    --color-bg: var(--coffee-950);
+    --color-surface: var(--coffee-900);
+    --color-border: var(--coffee-700);
+    --color-fg: var(--coffee-50);
+    --color-fg-muted: var(--coffee-300);
+    --color-accent: var(--coffee-200);
+    --color-accent-fg: var(--coffee-950);
+    --color-focus-ring: var(--coffee-300);
+
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--color-fg);
+  background: var(--color-bg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
