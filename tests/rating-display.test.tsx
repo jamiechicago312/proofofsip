@@ -4,31 +4,36 @@ import { RatingDisplay, RatingSummary } from "@/components/rating-display";
 import type { CategoryScores } from "@/lib/rating";
 
 describe("RatingDisplay", () => {
-  it("renders the thumb emoji for an exact category score", () => {
+  it("shows the plain-language word and exact value for an exact category score", () => {
     render(<RatingDisplay score={2} label="Taste" />);
-    expect(screen.getByText("👍👍")).toBeInTheDocument();
+    expect(screen.getByText("Exceptional")).toBeInTheDocument();
     expect(screen.getByText("Taste")).toBeInTheDocument();
     expect(screen.getByText("+2")).toBeInTheDocument();
   });
 
-  it("renders the nearest thumb and exact numeric value for a fractional overall", () => {
+  it("shows the nearest step's word and the exact numeric value for a fractional overall", () => {
     render(<RatingDisplay score={1.5} label="Overall" />);
-    // 1.5 rounds to the "Excellent" (+2) thumb, but the precise value is shown too.
-    expect(screen.getByText("👍👍")).toBeInTheDocument();
+    // 1.5 rounds to the "Exceptional" (+2) step's word, but the precise value is shown too.
+    expect(screen.getByText("Exceptional")).toBeInTheDocument();
     expect(screen.getByText("+1.5")).toBeInTheDocument();
   });
 
   it("hides the numeric score when showScore is false", () => {
     render(<RatingDisplay score={0} label="Foam" showScore={false} />);
-    expect(screen.getByText("🤷")).toBeInTheDocument();
+    expect(screen.getByText("Average")).toBeInTheDocument();
     expect(screen.queryByText("0")).not.toBeInTheDocument();
   });
 
-  it("exposes an accessible label combining the caption, thumb meaning, and value", () => {
+  it("exposes an accessible label combining the caption, step meaning, and value", () => {
     render(<RatingDisplay score={-2} label="Cost" />);
     expect(
-      screen.getByLabelText("Cost Terrible -2"),
+      screen.getByLabelText("Cost Poor -2"),
     ).toBeInTheDocument();
+  });
+
+  it("never renders an emoji glyph", () => {
+    const { container } = render(<RatingDisplay score={2} label="Taste" />);
+    expect(container.textContent).not.toMatch(/[\u{1F44D}\u{1F937}]/u);
   });
 });
 
@@ -50,7 +55,7 @@ describe("RatingSummary", () => {
     expect(screen.getByText("+1")).toBeInTheDocument();
     expect(screen.getByText("-1")).toBeInTheDocument();
     // sum = 0, average = 0 -> overall "0"
-    expect(screen.getByLabelText("Overall Okay 0")).toBeInTheDocument();
+    expect(screen.getByLabelText("Overall Average 0")).toBeInTheDocument();
   });
 
   it("uses a precomputed overall instead of recomputing when provided", () => {

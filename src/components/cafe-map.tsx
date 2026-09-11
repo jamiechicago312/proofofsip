@@ -3,9 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap } from "leaflet";
 import { hasCoordinates, mapTiles, type CafePin } from "@/lib/map";
-import { formatScore, nearestThumb } from "@/lib/rating";
+import { formatScore, nearestRatingStep, toBeanFill } from "@/lib/rating";
 import "leaflet/dist/leaflet.css";
 import styles from "./cafe-map.module.css";
+
+/** Plain-text stand-in for the four-bean meter, for the Leaflet popup's
+ * native (non-React) DOM content — rounded to a whole dot; the word and
+ * exact number alongside it carry the precise meaning. */
+function ratingDots(score: number): string {
+  const filled = Math.round(toBeanFill(score));
+  return "●".repeat(filled) + "○".repeat(4 - filled);
+}
 
 export function CafeMap({ cafes }: { cafes: CafePin[] }) {
   const container = useRef<HTMLDivElement>(null);
@@ -34,7 +42,7 @@ export function CafeMap({ cafes }: { cafes: CafePin[] }) {
         const title = document.createElement("strong");
         title.textContent = cafe.name;
         const rating = document.createElement("p");
-        rating.textContent = cafe.averageRating === null ? "No sips yet" : `${nearestThumb(cafe.averageRating).emoji} ${formatScore(cafe.averageRating)}`;
+        rating.textContent = cafe.averageRating === null ? "No sips yet" : `${ratingDots(cafe.averageRating)} ${nearestRatingStep(cafe.averageRating).label} ${formatScore(cafe.averageRating)}`;
         const link = document.createElement("a");
         link.href = `/cafes/${encodeURIComponent(cafe.slug)}`;
         link.textContent = "Read sip journal";

@@ -38,11 +38,25 @@
   --color-focus-ring: var(--coffee-500);
 
   /* Layout tokens, theme-independent. */
+  /* Inter (self-hosted via next/font, see layout.tsx) for body text and
+     UI chrome, with the previous system-font stack kept as the fallback
+     while a page's fonts load or if next/font's stylesheet fails. */
   --font-sans:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    var(--font-sans-family, -apple-system), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji";
+  /* Fraunces (also self-hosted) for headings and other display type — a
+     warm editorial serif voice, distinct from the sans body text, in the
+     same spirit as the boutique-roaster sites this redesign is modeled on. */
+  --font-display: var(--font-display-family, Georgia), Georgia, "Times New Roman", serif;
   --page-padding: clamp(1.25rem, 5vw, 4rem);
   --radius: 0.75rem;
+
+  /* Soft elevation for cards — a warm, low-contrast shadow rather than a
+     generic gray one, so raised surfaces still read as part of the same
+     coffee-toned palette. */
+  --shadow-card: 0 1px 2px rgba(27, 18, 12, 0.05), 0 8px 24px -14px rgba(27, 18, 12, 0.35);
+  --shadow-card-hover: 0 2px 4px rgba(27, 18, 12, 0.07), 0 14px 32px -14px rgba(27, 18, 12, 0.4);
 
   color-scheme: light;
 }
@@ -59,6 +73,12 @@
     --color-accent-fg: var(--coffee-950);
     --color-focus-ring: var(--coffee-300);
 
+    /* A warm-gray shadow reads as a lit edge, not a shadow, once the
+       surface behind it is already near-black — switch to a true black
+       shadow plus a faint light seam along the top edge instead. */
+    --shadow-card: 0 1px 0 rgba(250, 243, 230, 0.04) inset, 0 10px 28px -12px rgba(0, 0, 0, 0.55);
+    --shadow-card-hover: 0 1px 0 rgba(250, 243, 230, 0.06) inset, 0 16px 36px -12px rgba(0, 0, 0, 0.65);
+
     color-scheme: dark;
   }
 }
@@ -73,12 +93,42 @@ body {
 }
 
 body {
+  position: relative;
   margin: 0;
   color: var(--color-fg);
   background: var(--color-bg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* A faint paper-grain texture over the whole page — the flat, evenly-lit
+   surfaces a pure CSS palette gives you read as sterile/generic at this
+   level of minimalism; a few percent of noise is enough to make it feel
+   tactile instead, without adding any color or breaking the monochrome
+   theme. Decorative only: fixed, non-interactive, behind real content. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC44NSIgbnVtT2N0YXZlcz0iMiIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNuKSIvPjwvc3ZnPg==");
+  background-size: 180px 180px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body::before {
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+  }
+}
+
+body > * {
+  position: relative;
+  z-index: 2;
 }
 
 a {
@@ -95,4 +145,10 @@ h2,
 h3,
 p {
   margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
 }

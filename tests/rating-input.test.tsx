@@ -15,9 +15,9 @@ describe("RatingInput", () => {
   it("marks the option matching the current value as checked", () => {
     render(<RatingInput category="foam" value={1} onChange={() => {}} />);
 
-    const good = screen.getByRole("radio", { name: "Good" });
+    const good = screen.getByRole("radio", { name: "Very good" });
     expect(good).toBeChecked();
-    expect(screen.getByRole("radio", { name: "Excellent" })).not.toBeChecked();
+    expect(screen.getByRole("radio", { name: "Exceptional" })).not.toBeChecked();
   });
 
   it("calls onChange with the selected score on click", async () => {
@@ -25,7 +25,7 @@ describe("RatingInput", () => {
     const onChange = vi.fn<(value: RatingScore) => void>();
     render(<RatingInput category="cost" value={0} onChange={onChange} />);
 
-    await user.click(screen.getByRole("radio", { name: "Terrible" }));
+    await user.click(screen.getByRole("radio", { name: "Poor" }));
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith(-2);
@@ -37,7 +37,7 @@ describe("RatingInput", () => {
     render(<RatingInput category="atmosphere" value={0} onChange={onChange} />);
 
     await user.tab();
-    expect(screen.getByRole("radio", { name: "Okay" })).toHaveFocus();
+    expect(screen.getByRole("radio", { name: "Average" })).toHaveFocus();
 
     await user.keyboard("{ArrowRight}");
     expect(onChange).toHaveBeenCalledWith(1);
@@ -50,7 +50,7 @@ describe("RatingInput", () => {
       <RatingInput category="taste" value={0} onChange={onChange} disabled />,
     );
 
-    await user.click(screen.getByRole("radio", { name: "Excellent" }));
+    await user.click(screen.getByRole("radio", { name: "Exceptional" }));
 
     expect(onChange).not.toHaveBeenCalled();
   });
@@ -70,5 +70,12 @@ describe("RatingInput", () => {
     ).toBeInTheDocument();
     const radios = screen.getAllByRole("radio") as HTMLInputElement[];
     expect(radios.every((radio) => radio.name === "my-group")).toBe(true);
+  });
+
+  it("shows every option's plain-language word, not just an icon", () => {
+    render(<RatingInput category="taste" value={0} onChange={() => {}} />);
+    for (const word of ["Poor", "Fair", "Average", "Very good", "Exceptional"]) {
+      expect(screen.getByText(word)).toBeInTheDocument();
+    }
   });
 });

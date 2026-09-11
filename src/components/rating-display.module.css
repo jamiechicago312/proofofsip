@@ -1,7 +1,7 @@
 .rating {
   display: inline-flex;
   align-items: center;
-  gap: 0.35em;
+  gap: 0.4em;
   color: var(--color-fg);
 }
 
@@ -10,8 +10,17 @@
   font-size: 0.85em;
 }
 
-.thumb {
-  line-height: 1;
+.beans {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+}
+
+.word {
+  color: var(--color-fg);
+  font-weight: 600;
+  font-size: 0.85em;
+  letter-spacing: 0.01em;
 }
 
 .score {
@@ -36,9 +45,14 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .summaryOverall {
+  font-weight: 700;
+}
+
+.summaryOverall .word {
   font-weight: 700;
 }
 

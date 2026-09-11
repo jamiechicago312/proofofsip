@@ -2,24 +2,26 @@ import { describe, expect, it } from "vitest";
 import {
   CATEGORY_LABELS,
   RATING_CATEGORIES,
-  THUMBS_SCALE,
+  RATING_SCALE,
   computeOverall,
   formatScore,
-  getThumb,
-  nearestThumb,
+  getRatingStep,
+  nearestRatingStep,
+  toBeanFill,
   type CategoryScores,
 } from "@/lib/rating";
 
-describe("THUMBS_SCALE", () => {
+describe("RATING_SCALE", () => {
   it("has one step per integer from -2 to 2, in order", () => {
-    expect(THUMBS_SCALE.map((step) => step.value)).toEqual([-2, -1, 0, 1, 2]);
+    expect(RATING_SCALE.map((step) => step.value)).toEqual([-2, -1, 0, 1, 2]);
   });
 
-  it("gives every step a non-empty emoji and label", () => {
-    for (const step of THUMBS_SCALE) {
-      expect(step.emoji.length).toBeGreaterThan(0);
-      expect(step.label.length).toBeGreaterThan(0);
+  it("gives every step a non-empty, distinct label", () => {
+    const labels = RATING_SCALE.map((step) => step.label);
+    for (const label of labels) {
+      expect(label.length).toBeGreaterThan(0);
     }
+    expect(new Set(labels).size).toBe(labels.length);
   });
 });
 
@@ -31,31 +33,31 @@ describe("RATING_CATEGORIES / CATEGORY_LABELS", () => {
   });
 });
 
-describe("getThumb", () => {
+describe("getRatingStep", () => {
   it("returns the matching step for each valid score", () => {
-    expect(getThumb(-2).emoji).toBe("👎👎");
-    expect(getThumb(-1).emoji).toBe("👎");
-    expect(getThumb(0).emoji).toBe("🤷");
-    expect(getThumb(1).emoji).toBe("👍");
-    expect(getThumb(2).emoji).toBe("👍👍");
+    expect(getRatingStep(-2).label).toBe("Poor");
+    expect(getRatingStep(-1).label).toBe("Fair");
+    expect(getRatingStep(0).label).toBe("Average");
+    expect(getRatingStep(1).label).toBe("Very good");
+    expect(getRatingStep(2).label).toBe("Exceptional");
   });
 
   it("throws for an out-of-range score", () => {
     // @ts-expect-error - deliberately passing an invalid score
-    expect(() => getThumb(3)).toThrow(RangeError);
+    expect(() => getRatingStep(3)).toThrow(RangeError);
   });
 });
 
-describe("nearestThumb", () => {
+describe("nearestRatingStep", () => {
   it("rounds a fractional score to the nearest whole step", () => {
-    expect(nearestThumb(1.5).value).toBe(2);
-    expect(nearestThumb(1.4).value).toBe(1);
-    expect(nearestThumb(-1.5).value).toBe(-1);
+    expect(nearestRatingStep(1.5).value).toBe(2);
+    expect(nearestRatingStep(1.4).value).toBe(1);
+    expect(nearestRatingStep(-1.5).value).toBe(-1);
   });
 
   it("clamps values outside -2..2", () => {
-    expect(nearestThumb(5).value).toBe(2);
-    expect(nearestThumb(-5).value).toBe(-2);
+    expect(nearestRatingStep(5).value).toBe(2);
+    expect(nearestRatingStep(-5).value).toBe(-2);
   });
 });
 
@@ -69,6 +71,26 @@ describe("formatScore", () => {
     expect(formatScore(0)).toBe("0");
     expect(formatScore(-2)).toBe("-2");
     expect(formatScore(-1.5)).toBe("-1.5");
+  });
+});
+
+describe("toBeanFill", () => {
+  it("maps the -2..2 range onto 0..4 filled beans", () => {
+    expect(toBeanFill(-2)).toBe(0);
+    expect(toBeanFill(-1)).toBe(1);
+    expect(toBeanFill(0)).toBe(2);
+    expect(toBeanFill(1)).toBe(3);
+    expect(toBeanFill(2)).toBe(4);
+  });
+
+  it("preserves half-point precision for the overall score", () => {
+    expect(toBeanFill(1.5)).toBe(3.5);
+    expect(toBeanFill(-1.5)).toBe(0.5);
+  });
+
+  it("clamps out-of-range scores to the 0..4 meter", () => {
+    expect(toBeanFill(5)).toBe(4);
+    expect(toBeanFill(-5)).toBe(0);
   });
 });
 
