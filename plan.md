@@ -22,7 +22,7 @@ anyone can browse, filter, and read.
   restricted to one GitHub account.
 - Primarily Chicago now; the data model is not Chicago-only (city is a field),
   so expanding later needs no schema change.
-- "Cost" is a value-for-money thumbs rating, not a running price index — an
+- "Cost" is a value-for-money rating, not a running price index — an
   optional literal price field (e.g. "$5.50") can also be logged per sip.
 
 ## Recommended stack (rationale)
@@ -44,12 +44,22 @@ start, and Neon's setup cost is low.
 
 ## Rating system
 
-Four category ratings per sip, each a 5-step thumbs scale:
+Four category ratings per sip, each a 5-step scale, stored as -2..+2:
 
 ```
-👎👎  👎  🤷  👍  👍👍
--2    -1   0   +1   +2
+Poor  Fair  Average  Very good  Exceptional
+-2    -1    0        +1         +2
 ```
+
+Originally displayed as a thumbs-up/thumbs-down emoji per step
+(👎👎/👎/🤷/👍/👍👍) — replaced (see issue #31) with a four-bean fill meter
+(one bean per point of the -2..+2 range) plus the plain-language word,
+always shown rather than implied by an icon: emoji thumbs read as
+ambiguous at a glance (two thumbs-down vs. one is a hard visual
+distinction) and didn't say what they meant without hovering/guessing.
+The interactive selector (`RatingInput`) shows all five words at once
+rather than a cumulative meter, since it's choosing one of five values,
+not reading a filled amount.
 
 - **Taste**, **Atmosphere**, **Foam**, **Cost** (value for money) — each
   rated independently.

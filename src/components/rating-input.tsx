@@ -3,10 +3,11 @@
 import { useId } from "react";
 import {
   CATEGORY_LABELS,
-  THUMBS_SCALE,
+  RATING_SCALE,
   type RatingCategory,
   type RatingScore,
 } from "@/lib/rating";
+import { CoffeeBeanIcon } from "./coffee-bean-icon";
 import { cx } from "@/lib/cx";
 import styles from "./rating-input.module.css";
 
@@ -29,12 +30,19 @@ export interface RatingInputProps {
 }
 
 /**
- * Interactive five-way thumbs selector for one rating category, used by the
- * (future) admin sip form. A controlled component: the caller owns `value`
- * and receives updates via `onChange`. Built on native radio inputs (one
- * per thumbs-scale step) so keyboard support — Tab into the group, arrow
- * keys to move between options — comes from the browser, not reimplemented
- * roving-tabindex logic. Uses only design tokens for styling.
+ * Interactive five-way rating selector for one category, used by the admin
+ * sip form. A controlled component: the caller owns `value` and receives
+ * updates via `onChange`. Built on native radio inputs (one per
+ * rating-scale step) so keyboard support — Tab into the group, arrow keys
+ * to move between options — comes from the browser, not reimplemented
+ * roving-tabindex logic.
+ *
+ * Each option shows one coffee-bean icon, filled only when selected —
+ * *not* a cumulative meter like `RatingDisplay`'s, since this is choosing
+ * one of five distinct values rather than reading a filled amount — plus
+ * its plain-language word, always visible (not hidden behind a tooltip or
+ * an ambiguous emoji), so there's never any doubt what an option means.
+ * Uses only design tokens for styling.
  */
 export function RatingInput({
   category,
@@ -49,6 +57,7 @@ export function RatingInput({
   const autoId = useId();
   const groupName = name ?? category ?? autoId;
   const groupLabel = label ?? (category ? CATEGORY_LABELS[category] : undefined);
+  const beanSize = size === "sm" ? 18 : 22;
 
   return (
     <div
@@ -62,12 +71,12 @@ export function RatingInput({
         </span>
       ) : null}
       <div className={styles.options}>
-        {THUMBS_SCALE.map((thumb) => {
-          const optionId = `${groupName}-${thumb.value}`;
-          const selected = value === thumb.value;
+        {RATING_SCALE.map((step) => {
+          const optionId = `${groupName}-${step.value}`;
+          const selected = value === step.value;
           return (
             <label
-              key={thumb.value}
+              key={step.value}
               htmlFor={optionId}
               className={cx(styles.option, selected && styles.selected)}
             >
@@ -75,16 +84,20 @@ export function RatingInput({
                 type="radio"
                 id={optionId}
                 name={groupName}
-                value={thumb.value}
+                value={step.value}
                 className={styles.input}
                 checked={selected}
                 disabled={disabled}
-                onChange={() => onChange(thumb.value)}
+                onChange={() => onChange(step.value)}
               />
-              <span className={styles.emoji} aria-hidden="true">
-                {thumb.emoji}
-              </span>
-              <span className={styles.visuallyHidden}>{thumb.label}</span>
+              <CoffeeBeanIcon
+                fill={selected ? 1 : 0}
+                size={beanSize}
+                filledColor="var(--color-accent)"
+                outlineColor="var(--color-fg-muted)"
+                className={styles.icon}
+              />
+              <span className={styles.optionWord}>{step.label}</span>
             </label>
           );
         })}

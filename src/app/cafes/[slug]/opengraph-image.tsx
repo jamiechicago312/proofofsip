@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getCafeBySlugWithSips } from "@/lib/cafe-detail";
-import { formatScore, nearestThumb } from "@/lib/rating";
+import { formatScore, nearestRatingStep, toBeanFill } from "@/lib/rating";
 
 // Per-cafe share-preview image — the practical unit of "per sip" OG image
 // the issue asks for, since individual sips don't have their own route
@@ -60,7 +60,10 @@ export default async function Image({
 
   const latestSip = cafe.sips[0];
   const photo = latestSip?.photos[0];
-  const thumb = latestSip ? nearestThumb(latestSip.overall) : null;
+  const step = latestSip ? nearestRatingStep(latestSip.overall) : null;
+  // Rounded to a whole dot for this small badge — the precise value is
+  // still spelled out in the text next to it.
+  const filledDots = latestSip ? Math.round(toBeanFill(latestSip.overall)) : 0;
 
   return new ImageResponse(
     (
@@ -131,12 +134,12 @@ export default async function Image({
           >
             {cafe.name}
           </div>
-          {thumb ? (
+          {step ? (
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 16,
+                gap: 18,
                 fontSize: 36,
                 padding: "10px 28px",
                 borderRadius: 999,
@@ -144,9 +147,23 @@ export default async function Image({
                 alignSelf: "flex-start",
               }}
             >
-              <span style={{ display: "flex" }}>{thumb.emoji}</span>
+              <div style={{ display: "flex", gap: 8 }}>
+                {[0, 1, 2, 3].map((position) => (
+                  <div
+                    key={position}
+                    style={{
+                      display: "flex",
+                      width: 22,
+                      height: 22,
+                      borderRadius: 999,
+                      background: position < filledDots ? PALETTE.fg : "transparent",
+                      border: `2px solid ${PALETTE.fg}`,
+                    }}
+                  />
+                ))}
+              </div>
               <span style={{ display: "flex", color: PALETTE.muted }}>
-                {formatScore(latestSip!.overall)} overall
+                {step.label} {formatScore(latestSip!.overall)}
               </span>
             </div>
           ) : (

@@ -2,10 +2,18 @@
  * Rating system shared types and pure logic.
  *
  * See `plan.md` → "Rating system": every sip is scored on four categories,
- * each a five-step thumbs scale from -2 to +2. The `overall` score is the
- * average of those four, computed here so both the display and input
- * components (and, later, the admin form / API route that saves a sip)
- * share one source of truth instead of re-deriving it independently.
+ * each a five-step scale from -2 to +2. The `overall` score is the average
+ * of those four, computed here so both the display and input components
+ * (and, later, the admin form / API route that saves a sip) share one
+ * source of truth instead of re-deriving it independently.
+ *
+ * Originally displayed as a thumbs-up/thumbs-down emoji per step
+ * (👎👎/👎/🤷/👍/👍👍), which read as ambiguous and a little juvenile for a
+ * tasting journal — two thumbs-down and one thumbs-down are hard to
+ * tell apart at a glance, and an emoji alone doesn't say what it means.
+ * Replaced with a plain-language word (always shown, never just implied by
+ * an icon) plus a four-segment "bean meter" — see `toBeanFill` below and
+ * `src/components/coffee-bean-icon.tsx`.
  */
 
 /** The four independently-rated categories for a sip. */
@@ -38,32 +46,36 @@ export interface CategoryScores {
   cost: RatingScore;
 }
 
-/** One step of the thumbs scale: the value plus its emoji/text rendering. */
-export interface ThumbStep {
+/** One step of the rating scale: the value plus its plain-language meaning. */
+export interface RatingStep {
   value: RatingScore;
-  emoji: string;
-  /** Short text label, used for accessible names and tooltips. */
+  /**
+   * Plain-language meaning, always shown alongside the bean meter and the
+   * exact number — the wording Yelp-style rating scales use (plan.md cites
+   * Yelp as a direct reference), chosen so the middle step reads as a true
+   * neutral rather than a shrug.
+   */
   label: string;
 }
 
 /**
- * The five-step thumbs scale, -2..+2, as a single typed source of truth.
+ * The five-step rating scale, -2..+2, as a single typed source of truth.
  * `rating-display.tsx` (read-only) and `rating-input.tsx` (interactive)
- * both render from this array so the emoji/labels never drift apart.
+ * both render from this array so the wording never drifts between them.
  */
-export const THUMBS_SCALE: readonly ThumbStep[] = [
-  { value: -2, emoji: "👎👎", label: "Terrible" },
-  { value: -1, emoji: "👎", label: "Not great" },
-  { value: 0, emoji: "🤷", label: "Okay" },
-  { value: 1, emoji: "👍", label: "Good" },
-  { value: 2, emoji: "👍👍", label: "Excellent" },
+export const RATING_SCALE: readonly RatingStep[] = [
+  { value: -2, label: "Poor" },
+  { value: -1, label: "Fair" },
+  { value: 0, label: "Average" },
+  { value: 1, label: "Very good" },
+  { value: 2, label: "Exceptional" },
 ];
 
-const THUMBS_BY_VALUE = new Map(THUMBS_SCALE.map((step) => [step.value, step]));
+const STEPS_BY_VALUE = new Map(RATING_SCALE.map((step) => [step.value, step]));
 
-/** Looks up the thumbs-scale step for an exact -2..2 integer score. */
-export function getThumb(score: RatingScore): ThumbStep {
-  const step = THUMBS_BY_VALUE.get(score);
+/** Looks up the rating-scale step for an exact -2..2 integer score. */
+export function getRatingStep(score: RatingScore): RatingStep {
+  const step = STEPS_BY_VALUE.get(score);
   if (!step) {
     throw new RangeError(
       `Invalid rating score: ${score}. Expected an integer from -2 to 2.`,
@@ -73,14 +85,14 @@ export function getThumb(score: RatingScore): ThumbStep {
 }
 
 /**
- * Rounds an arbitrary score to the nearest thumbs-scale step, for choosing
- * which emoji best represents a value that isn't necessarily an exact
+ * Rounds an arbitrary score to the nearest rating-scale step, for choosing
+ * which word best describes a value that isn't necessarily an exact
  * integer (e.g. an `overall` average). Clamps to the -2..2 range first.
  */
-export function nearestThumb(score: number): ThumbStep {
+export function nearestRatingStep(score: number): RatingStep {
   const clamped = Math.max(-2, Math.min(2, score));
   const rounded = Math.round(clamped) as RatingScore;
-  return getThumb(rounded);
+  return getRatingStep(rounded);
 }
 
 function assertValidScore(category: RatingCategory, value: RatingScore): void {
@@ -96,9 +108,9 @@ function assertValidScore(category: RatingCategory, value: RatingScore): void {
  * category scores (taste, atmosphere, foam, cost).
  *
  * Rounding choice: the average is rounded to the **nearest 0.5**, not to a
- * whole thumb step, using JS `Math.round` tie-breaking (exact `.25`/`.75`
- * ties round toward +Infinity — e.g. `1.75 -> 2`, `-1.75 -> -1.5`). Keeping
- * one decimal of half-point precision avoids implying false accuracy from a
+ * whole step, using JS `Math.round` tie-breaking (exact `.25`/`.75` ties
+ * round toward +Infinity — e.g. `1.75 -> 2`, `-1.75 -> -1.5`). Keeping one
+ * decimal of half-point precision avoids implying false accuracy from a
  * raw average like `1.1666...`, while still distinguishing sips a plain
  * integer average would collapse together (e.g. `1,1,1,2` -> `1.25` ->
  * `1.5`, vs. `1,1,1,1` -> `1.0`) — which matters once cafes are ranked by
@@ -119,4 +131,16 @@ export function computeOverall(scores: CategoryScores): number {
 export function formatScore(score: number): string {
   const sign = score > 0 ? "+" : "";
   return `${sign}${score}`;
+}
+
+/**
+ * Maps a -2..+2 score onto a 0..4 "beans filled" amount for the four-bean
+ * meter (`src/components/coffee-bean-icon.tsx`) — four segments for a
+ * four-unit range (-2 to +2), so each bean represents exactly one point of
+ * the scale, rather than an arbitrary fifth "fencepost" bean. Supports the
+ * half-point precision `overall` can land on (e.g. a score of `1.5` fills
+ * 3.5 of the 4 beans).
+ */
+export function toBeanFill(score: number): number {
+  return Math.max(0, Math.min(4, score + 2));
 }

@@ -3,9 +3,11 @@ import {
   RATING_CATEGORIES,
   computeOverall,
   formatScore,
-  nearestThumb,
+  nearestRatingStep,
+  toBeanFill,
   type CategoryScores,
 } from "@/lib/rating";
+import { CoffeeBeanIcon } from "./coffee-bean-icon";
 import { cx } from "@/lib/cx";
 import styles from "./rating-display.module.css";
 
@@ -13,14 +15,15 @@ export type RatingDisplaySize = "sm" | "md";
 
 export interface RatingDisplayProps {
   /**
-   * The score to render, as thumbs. Category scores are exact integers
-   * (-2..2); `overall` may land on a half-point (e.g. 1.5) — the emoji shown
-   * is the nearest whole thumb, with the exact value alongside it.
+   * The score to render as a four-bean meter. Category scores are exact
+   * integers (-2..2); `overall` may land on a half-point (e.g. 1.5) — the
+   * word shown is the nearest whole step's meaning, with the exact value
+   * and a half-filled bean shown alongside it.
    */
   score: number;
-  /** Optional caption shown before the thumb, e.g. "Taste" or "Overall". */
+  /** Optional caption shown before the meter, e.g. "Taste" or "Overall". */
   label?: string;
-  /** Show the exact numeric value (e.g. "+1.5") next to the emoji. */
+  /** Show the exact numeric value (e.g. "+1.5") next to the meter. */
   showScore?: boolean;
   size?: RatingDisplaySize;
   className?: string;
@@ -28,7 +31,9 @@ export interface RatingDisplayProps {
 
 /**
  * Read-only rendering of a single rating value (one category, or the
- * computed overall) as thumbs. Pure display — no interaction, no
+ * computed overall): a four-bean fill meter, the plain-language word for
+ * where it lands (always visible, not just implied by an icon), and
+ * optionally the exact number. Pure display — no interaction, no
  * hardcoded colors; all color/spacing comes from the design tokens in
  * `globals.css` via CSS module classes.
  */
@@ -39,10 +44,12 @@ export function RatingDisplay({
   size = "md",
   className,
 }: RatingDisplayProps) {
-  const thumb = nearestThumb(score);
+  const step = nearestRatingStep(score);
+  const fill = toBeanFill(score);
+  const beanSize = size === "sm" ? 13 : 16;
   const accessibleName = [
     label,
-    thumb.label,
+    step.label,
     showScore ? formatScore(score) : null,
   ]
     .filter(Boolean)
@@ -58,8 +65,19 @@ export function RatingDisplay({
           {label}
         </span>
       ) : null}
-      <span className={styles.thumb} aria-hidden="true">
-        {thumb.emoji}
+      <span className={styles.beans} aria-hidden="true">
+        {[1, 2, 3, 4].map((position) => (
+          <CoffeeBeanIcon
+            key={position}
+            fill={Math.max(0, Math.min(1, fill - (position - 1)))}
+            size={beanSize}
+            filledColor="var(--color-accent)"
+            outlineColor="var(--color-fg-muted)"
+          />
+        ))}
+      </span>
+      <span className={styles.word} aria-hidden="true">
+        {step.label}
       </span>
       {showScore ? (
         <span className={styles.score} aria-hidden="true">
