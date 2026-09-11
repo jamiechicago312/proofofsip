@@ -15,8 +15,32 @@ export type SipFormEntry = CategoryScores & {
   photos?: Photo[];
 };
 
+/**
+ * A cafe as offered in the "Cafe" dropdown. The location fields are
+ * optional so a minimal `{ id, name }` still satisfies the type — but the
+ * admin pages always fetch the full row, so selecting a cafe can pre-fill
+ * its current address/coordinates for editing (see issue #29).
+ */
+export type CafeOption = {
+  id: string;
+  name: string;
+  neighborhood?: string | null;
+  address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+};
+
+function locationFieldsFor(cafe: CafeOption | undefined) {
+  return {
+    neighborhood: cafe?.neighborhood ?? "",
+    address: cafe?.address ?? "",
+    lat: cafe?.lat != null ? String(cafe.lat) : "",
+    lng: cafe?.lng != null ? String(cafe.lng) : "",
+  };
+}
+
 export function SipForm({ cafes, entry }: {
-  cafes: { id: string; name: string }[];
+  cafes: CafeOption[];
   entry?: SipFormEntry;
 }) {
   const [state, action, pending] = useActionState(saveSip, { error: "" });
@@ -24,10 +48,7 @@ export function SipForm({ cafes, entry }: {
   const [scores, setScores] = useState<CategoryScores>(entry ?? { taste: 0, atmosphere: 0, foam: 0, cost: 0 });
   const [fields, setFields] = useState({
     cafeName: "",
-    neighborhood: "",
-    address: "",
-    lat: "",
-    lng: "",
+    ...locationFieldsFor(cafes.find((cafe) => cafe.id === cafeId)),
     title: entry?.title ?? "",
     body: entry?.body ?? "",
     visitDate: entry?.visitDate ?? new Date().toISOString().slice(0, 10),
@@ -52,18 +73,27 @@ export function SipForm({ cafes, entry }: {
       <fieldset disabled={pending} className={styles.fields}>
         <legend>Sip details</legend>
         <input type="hidden" name="id" value={entry?.id ?? ""} />
-        <label>Cafe<select name="cafeId" value={cafeId} onChange={(event) => setCafeId(event.target.value)}>
+        <label>Cafe<select name="cafeId" value={cafeId} onChange={(event) => {
+          const nextId = event.target.value;
+          setCafeId(nextId);
+          setFields((previous) => ({ ...previous, ...locationFieldsFor(cafes.find((cafe) => cafe.id === nextId)) }));
+        }}>
           {cafes.map((cafe) => <option key={cafe.id} value={cafe.id}>{cafe.name}</option>)}
           <option value="">Create a new cafe</option>
         </select></label>
-        {!cafeId && <fieldset className={styles.fields}><legend>New cafe</legend>
-          <label>Cafe name<input {...textField("cafeName")} required maxLength={200} /></label>
+        <fieldset className={styles.fields}>
+          <legend>{cafeId ? "Cafe location" : "New cafe"}</legend>
+          {!cafeId && <label>Cafe name<input {...textField("cafeName")} required maxLength={200} /></label>}
           <label>Neighborhood<input {...textField("neighborhood")} maxLength={200} /></label>
           <label>Address<input {...textField("address")} maxLength={500} /></label>
-          <p>Optional map location: enter both coordinates to show this cafe on the map.</p>
+          <p>
+            Optional map location: enter both coordinates, or leave them
+            blank and Proof of Sip will look them up from the address when
+            you save.
+          </p>
           <label>Latitude<input {...textField("lat")} type="number" step="any" min={-90} max={90} /></label>
           <label>Longitude<input {...textField("lng")} type="number" step="any" min={-180} max={180} /></label>
-        </fieldset>}
+        </fieldset>
         <label>Title<input {...textField("title")} required maxLength={200} /></label>
         <label>Visit date<input {...textField("visitDate")} type="date" required /></label>
         <label>Journal entry (Markdown supported)<textarea {...textField("body")} rows={12} required maxLength={50000} /></label>

@@ -37,6 +37,12 @@ export function parseSipInput(form: FormData) {
     id: field("id", 100),
     cafeId,
     cafe: { name: cafeName, neighborhood: field("neighborhood", 200) || null, address: field("address", 500) || null, lat, lng },
+    // Whether the submission actually included the cafe-location fields at
+    // all (the sip form always sends them, whether creating a cafe or
+    // reusing an existing one) — distinguishes "edit this cafe's location"
+    // from a bare/minimal submission that shouldn't touch the cafe row.
+    // Same pattern as the `photos` field below.
+    hasCafeLocationFields: form.has("address"),
     sip: {
       title: field("title", 200, true),
       body: field("body", 50000, true),

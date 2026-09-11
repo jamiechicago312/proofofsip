@@ -16,7 +16,10 @@ export default async function EditSipPage({ params }: PageProps<"/admin/sips/[id
   const { id } = await params;
   const [entry, choices] = await Promise.all([
     db().query.sips.findFirst({ where: eq(sips.id, id) }),
-    db().select({ id: cafes.id, name: cafes.name }).from(cafes).orderBy(asc(cafes.name)),
+    db()
+      .select({ id: cafes.id, name: cafes.name, neighborhood: cafes.neighborhood, address: cafes.address, lat: cafes.lat, lng: cafes.lng })
+      .from(cafes)
+      .orderBy(asc(cafes.name)),
   ]);
   if (!entry) notFound();
   return <SipForm cafes={choices} entry={{ ...entry, ...({ taste: entry.taste, atmosphere: entry.atmosphere, foam: entry.foam, cost: entry.cost } as CategoryScores), visitDate: entry.visitDate.toISOString().slice(0, 10) }} />;

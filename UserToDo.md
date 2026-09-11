@@ -49,6 +49,13 @@ Vercel or Blob storage.
 - **Map tiles (CARTO Positron/Dark Matter):** free, no signup, used directly
   by URL. If you'd rather use Mapbox or Google Maps tiles later for a
   different look, that would need its own API key — not needed for v1.
+- **Address geocoding (OpenStreetMap Nominatim):** also free and keyless.
+  Saving a cafe with an address but no coordinates now looks them up
+  automatically (issue #29). If you have cafes from before this shipped
+  that still have an address but no map pin, run
+  `npm run db:backfill-coordinates` once (needs `DATABASE_URL` set) to fix
+  them all in one pass — safe to re-run, it only touches cafes still
+  missing coordinates.
 
 ## Safety notes
 
