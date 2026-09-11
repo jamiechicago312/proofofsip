@@ -5,7 +5,10 @@ import { db } from "@/lib/db";
 import { cafes } from "@/lib/schema";
 import { SipForm } from "../sip-form";
 
-export const metadata = { title: "New sip — Proof of Sip" };
+export const metadata = {
+  title: "New sip — Proof of Sip",
+  robots: { index: false, follow: false },
+};
 
 export default async function NewSipPage() {
   if (!(await auth())?.user) redirect("/admin");

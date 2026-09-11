@@ -24,6 +24,13 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Cafes — Proof of Sip",
+  description:
+    "Browse Chicago cafes by rating, neighborhood, or tag, or find them on the map — every cappuccino, rated.",
+  alternates: { canonical: "/cafes" },
+  openGraph: {
+    title: "Cafes — Proof of Sip",
+    description: "Browse Chicago cafes by rating, neighborhood, or tag, or find them on the map.",
+  },
 };
 
 function firstParam(value: string | string[] | undefined): string | undefined {

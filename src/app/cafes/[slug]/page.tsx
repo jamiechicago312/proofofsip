@@ -28,14 +28,20 @@ export async function generateMetadata({
   const cafe = await getCafeBySlugWithSips(slug);
 
   if (!cafe) {
-    return { title: "Cafe not found — Proof of Sip" };
+    return { title: "Cafe not found — Proof of Sip", robots: { index: false } };
   }
 
+  const title = `${cafe.name} — Proof of Sip`;
+  const description = cafe.neighborhood
+    ? `Cappuccino journal entries for ${cafe.name} in ${cafe.neighborhood}, Chicago.`
+    : `Cappuccino journal entries for ${cafe.name}.`;
+
   return {
-    title: `${cafe.name} — Proof of Sip`,
-    description: cafe.neighborhood
-      ? `Cappuccino journal entries for ${cafe.name} in ${cafe.neighborhood}, Chicago.`
-      : `Cappuccino journal entries for ${cafe.name}.`,
+    title,
+    description,
+    alternates: { canonical: `/cafes/${encodeURIComponent(cafe.slug)}` },
+    openGraph: { title, description, type: "article" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 

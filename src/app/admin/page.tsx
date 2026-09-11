@@ -7,6 +7,7 @@ import { cafes, sips } from "@/lib/schema";
 
 export const metadata = {
   title: "Admin — Proof of Sip",
+  robots: { index: false, follow: false },
 };
 
 export default async function AdminPage({
