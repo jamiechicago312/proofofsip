@@ -141,28 +141,30 @@ export default async function CafeDetailPage({
             <span className={styles.address}>{cafe.address}</span>
           ) : null}
         </div>
-        {cafe.website || cafe.instagram || directions ? (
+        {directions ? (
+          <p className={styles.directions}>
+            Get directions:{" "}
+            <a
+              href={directions.google}
+              aria-label="Get directions on Google Maps"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Google
+            </a>
+            <span aria-hidden="true"> | </span>
+            <a
+              href={directions.apple}
+              aria-label="Get directions on Apple Maps"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Apple
+            </a>
+          </p>
+        ) : null}
+        {cafe.website || cafe.instagram ? (
           <div className={styles.links}>
-            {directions ? (
-              <>
-                <a
-                  href={directions.google}
-                  className={styles.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Get directions (Google Maps)
-                </a>
-                <a
-                  href={directions.apple}
-                  className={styles.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Get directions (Apple Maps)
-                </a>
-              </>
-            ) : null}
             {cafe.website ? (
               <a
                 href={cafe.website}
