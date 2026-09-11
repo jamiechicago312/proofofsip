@@ -1,0 +1,42 @@
+.wrapper {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.map {
+  height: clamp(12rem, 32vh, 18rem);
+  width: 100%;
+  z-index: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.pin {
+  color: var(--color-accent-fg);
+  background: var(--color-accent);
+  border: 2px solid var(--color-bg);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 22px;
+}
+
+.map :global(.leaflet-control-attribution) {
+  background: var(--color-surface);
+  color: var(--color-fg);
+}
+
+.map :global(.leaflet-control-attribution a) {
+  color: var(--color-fg);
+}
+
+.fallback :global(.leaflet-tile-pane) {
+  filter: grayscale(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .fallback :global(.leaflet-tile-pane) {
+    filter: grayscale(1) invert(1);
+  }
+}
