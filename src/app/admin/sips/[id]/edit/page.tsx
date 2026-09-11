@@ -6,7 +6,10 @@ import { cafes, sips } from "@/lib/schema";
 import type { CategoryScores } from "@/lib/rating";
 import { SipForm } from "../../sip-form";
 
-export const metadata = { title: "Edit sip — Proof of Sip" };
+export const metadata = {
+  title: "Edit sip — Proof of Sip",
+  robots: { index: false, follow: false },
+};
 
 export default async function EditSipPage({ params }: PageProps<"/admin/sips/[id]/edit">) {
   if (!(await auth())?.user) redirect("/admin");
