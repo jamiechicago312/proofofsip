@@ -55,4 +55,18 @@ describe("sip validation", () => {
     form.set(field, "   ");
     expect(() => parseSipInput(form)).toThrow();
   });
+
+  // `hasCafeLocationFields` distinguishes "the sip form's cafe-location
+  // fieldset was actually submitted" from a bare/minimal submission (e.g. a
+  // future API caller, or these tests' own `validForm()`), independent of
+  // whether those fields are blank — see saveSip's use of it in
+  // src/app/admin/sips/actions.ts (issue #29).
+  it("flags whether cafe-location fields were submitted at all, regardless of their values", () => {
+    expect(parseSipInput(validForm()).hasCafeLocationFields).toBe(false);
+    const form = validForm();
+    form.set("address", "");
+    expect(parseSipInput(form).hasCafeLocationFields).toBe(true);
+    form.set("address", "1543 N Milwaukee Ave");
+    expect(parseSipInput(form).hasCafeLocationFields).toBe(true);
+  });
 });

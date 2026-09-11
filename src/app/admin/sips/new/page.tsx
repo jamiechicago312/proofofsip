@@ -12,6 +12,9 @@ export const metadata = {
 
 export default async function NewSipPage() {
   if (!(await auth())?.user) redirect("/admin");
-  const choices = await db().select({ id: cafes.id, name: cafes.name }).from(cafes).orderBy(asc(cafes.name));
+  const choices = await db()
+    .select({ id: cafes.id, name: cafes.name, neighborhood: cafes.neighborhood, address: cafes.address, lat: cafes.lat, lng: cafes.lng })
+    .from(cafes)
+    .orderBy(asc(cafes.name));
   return <SipForm cafes={choices} />;
 }

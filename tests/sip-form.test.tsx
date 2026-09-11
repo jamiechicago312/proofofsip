@@ -24,4 +24,30 @@ describe("sip form", () => {
     expect(screen.getByLabelText(/Journal entry/)).toHaveValue("Keep my writing");
     expect(screen.getByRole("button", { name: "Save sip" })).toBeEnabled();
   });
+
+  // Issue #29: a cafe's address/coordinates could only ever be entered once,
+  // at creation, with no way to add or fix them afterward. Selecting an
+  // existing cafe now pre-fills its current location for editing.
+  it("pre-fills the selected cafe's address and coordinates, and swaps them when switching cafes", async () => {
+    const user = userEvent.setup();
+    render(
+      <SipForm
+        cafes={[
+          { id: "cafe-1", name: "Cero", neighborhood: "Wicker Park", address: "1543 N Milwaukee Ave", lat: 41.9095, lng: -87.6712 },
+          { id: "cafe-2", name: "Unmapped Cafe", neighborhood: null, address: "900 W Randolph St", lat: null, lng: null },
+        ]}
+      />,
+    );
+
+    expect(screen.getByLabelText("Neighborhood")).toHaveValue("Wicker Park");
+    expect(screen.getByLabelText("Address")).toHaveValue("1543 N Milwaukee Ave");
+    expect((screen.getByLabelText("Latitude") as HTMLInputElement).value).toBe("41.9095");
+    expect((screen.getByLabelText("Longitude") as HTMLInputElement).value).toBe("-87.6712");
+
+    await user.selectOptions(screen.getByLabelText("Cafe"), "cafe-2");
+
+    expect(screen.getByLabelText("Address")).toHaveValue("900 W Randolph St");
+    expect((screen.getByLabelText("Latitude") as HTMLInputElement).value).toBe("");
+    expect((screen.getByLabelText("Longitude") as HTMLInputElement).value).toBe("");
+  });
 });
