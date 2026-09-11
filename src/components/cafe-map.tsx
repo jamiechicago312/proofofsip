@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap } from "leaflet";
-import { hasCoordinates, mapTiles, type CafePin } from "@/lib/map";
+import { attachThemedTileLayer, hasCoordinates, type CafePin } from "@/lib/map";
 import { formatScore, nearestRatingStep, toBeanFill } from "@/lib/rating";
 import "leaflet/dist/leaflet.css";
 import styles from "./cafe-map.module.css";
@@ -29,13 +29,7 @@ export function CafeMap({ cafes }: { cafes: CafePin[] }) {
       const leaflet = await import("leaflet");
       if (disposed || !container.current) return;
       map = leaflet.map(container.current, { scrollWheelZoom: false }).setView([41.8781, -87.6298], 12);
-      const theme = window.matchMedia("(prefers-color-scheme: dark)");
-      const tiles = mapTiles(theme.matches, key);
-      const layer = leaflet.tileLayer(tiles.url, { attribution: tiles.attribution, maxZoom: 19 }).addTo(map);
-      layer.on("tileerror", () => setFailed(true));
-      const changeTheme = () => layer.setUrl(mapTiles(theme.matches, key).url);
-      theme.addEventListener("change", changeTheme);
-      cleanupTheme = () => theme.removeEventListener("change", changeTheme);
+      cleanupTheme = attachThemedTileLayer(leaflet, map, key, () => setFailed(true));
       const pins = cafes.filter(hasCoordinates);
       for (const cafe of pins) {
         const popup = document.createElement("div");

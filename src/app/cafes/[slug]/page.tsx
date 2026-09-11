@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { getCafeBySlugWithSips, type SipEntry } from "@/lib/cafe-detail";
 import { RatingSummary } from "@/components/rating-display";
+import { CafeLocationMap } from "@/components/cafe-location-map";
+import { directionsLinks, hasCoordinates } from "@/lib/map";
 import type { CategoryScores } from "@/lib/rating";
 import styles from "./page.module.css";
 
@@ -125,6 +127,8 @@ export default async function CafeDetailPage({
     notFound();
   }
 
+  const directions = directionsLinks(cafe);
+
   return (
     <main className={styles.main}>
       <header className={styles.header}>
@@ -137,6 +141,28 @@ export default async function CafeDetailPage({
             <span className={styles.address}>{cafe.address}</span>
           ) : null}
         </div>
+        {directions ? (
+          <p className={styles.directions}>
+            Get directions:{" "}
+            <a
+              href={directions.google}
+              aria-label="Get directions on Google Maps"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Google
+            </a>
+            <span aria-hidden="true"> | </span>
+            <a
+              href={directions.apple}
+              aria-label="Get directions on Apple Maps"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Apple
+            </a>
+          </p>
+        ) : null}
         {cafe.website || cafe.instagram ? (
           <div className={styles.links}>
             {cafe.website ? (
@@ -172,6 +198,32 @@ export default async function CafeDetailPage({
       ) : (
         <p className={styles.empty}>No published sips for this cafe yet.</p>
       )}
+
+      {hasCoordinates(cafe) ? (
+        <section className={styles.location} aria-labelledby="location-title">
+          <h2 id="location-title" className={styles.locationTitle}>
+            Location
+          </h2>
+          <CafeLocationMap name={cafe.name} lat={cafe.lat} lng={cafe.lng} />
+        </section>
+      ) : cafe.address ? (
+        <section className={styles.location} aria-labelledby="location-title">
+          <h2 id="location-title" className={styles.locationTitle}>
+            Location
+          </h2>
+          <p className={styles.empty}>
+            This cafe hasn&apos;t been mapped yet — use{" "}
+            {directions ? (
+              <a href={directions.google} target="_blank" rel="noopener noreferrer">
+                Google Maps
+              </a>
+            ) : (
+              "a maps app"
+            )}{" "}
+            to look it up by address in the meantime.
+          </p>
+        </section>
+      ) : null}
     </main>
   );
 }

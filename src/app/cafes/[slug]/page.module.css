@@ -37,6 +37,18 @@
   margin: 0;
 }
 
+.directions {
+  color: var(--color-fg-muted);
+  font-size: 0.95rem;
+}
+
+.directions a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .links {
   display: flex;
   flex-wrap: wrap;
@@ -59,6 +71,17 @@
 
 .empty {
   color: var(--color-fg-muted);
+}
+
+.location {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.locationTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .sip {
